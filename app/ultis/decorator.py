@@ -16,7 +16,7 @@ def jwt_required(fn):
     return wrapper
 
 
-def roles_required(roles=[]):
+def role_required(roles=[]):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):

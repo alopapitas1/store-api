@@ -1,4 +1,4 @@
-def render_store_list(productos):
+def render_producto_list(productos):
     return[
         {
             "id":store.id,
@@ -10,14 +10,13 @@ def render_store_list(productos):
         for store in productos
     ]
     
-def render_store_detail(producto):
-    return [
-        {
+def render_producto_detail(producto):
+    return {
             "id":producto.id,
             "name":producto.name,
             "description":producto.description,
             "price":producto.price,
             "stock":producto.stock,
         }
-    ]
+    
 

@@ -1,73 +1,74 @@
-from flask import Blueprint, jsonify,request
-from app.models.store_model import Store
-from app.ultis.decorator import jwt_required, roles_required
-from app.views.store_view import render_store_detail,render_store_list
+from flask import Blueprint, request, jsonify
+from app.models.store_model import Producto
+from app.views.store_view import render_producto_list, render_producto_detail
+from app.ultis.decorator import jwt_required, role_required
 
-store_bp=Blueprint("store",__name__)
+producto_bp = Blueprint("producto", __name__)
 
-
-@store_bp.route("/products",methods=["GET"])
+@producto_bp.route("/products", methods=["GET"])
 @jwt_required
-@roles_required(roles=["admin","user"])
-def get_stores():
-    stores=Store.get_all()
-    return jsonify(render_store_list(stores))
+@role_required(roles=["admin", "user"])
+def get_productos():
+    productos = Producto.get_all()
+    return jsonify(render_producto_list(productos))
 
-@store_bp.route("/products/<int:id>", methods=["GET"])
+@producto_bp.route("/products/<int:id>", methods=["GET"])
 @jwt_required
-@roles_required(roles=["admin", "user"])
-def get_Store(id):
-    Stores = Store.get_by_id(id)
-    if Stores:
-        return jsonify(render_store_detail(Stores))
-    return jsonify({"error": "Store no encontrado"}), 404
+@role_required(roles=["admin", "user"])
+def get_producto(id):
+    producto = Producto.get_by_id(id)
+    if producto:
+        return jsonify(render_producto_detail(producto))
+    return jsonify({"error": "Producto no encontrado"}), 404
 
-
-@store_bp.route("/products", methods=["POST"])
+@producto_bp.route("/products", methods=["POST"])
 @jwt_required
-@roles_required(roles=["admin"])
-def create_Store():
+@role_required(roles=["admin"])
+def create_producto():
     data = request.json
     name = data.get("name")
     description = data.get("description")
     price = data.get("price")
-    stock=data.get("stock")
+    stock = data.get("stock")
 
     if name is None or description is None or price is None or stock is None:
         return jsonify({"error": "Faltan datos requeridos"}), 400
 
-    Stores = Store(name=name, description=description, price=float(price),stock=stock)
-    Store.save()
+    producto = Producto(name=name, description=description, price=price,stock=stock )
+    producto.save()
 
-    return jsonify(render_store_detail(Stores)), 201
+    return jsonify(render_producto_detail(producto)), 201
 
 
-@store_bp.route("/products/<int:id>", methods=["PUT"])
+# Ruta para actualizar un animal existente
+@producto_bp.route("/products/<int:id>", methods=["PUT"])
 @jwt_required
-@roles_required(roles=["admin"])
-def update_Store(id):
-    Stores = Store.get_by_id(id)
-    if not Stores:
-        return jsonify({"error": "Store no encontrado"}), 404
+@role_required(roles=["admin"])
+def update_producto(id):
+    producto = Producto.get_by_id(id)
+
+    if not producto:
+        return jsonify({"error": "Producto no encontrado"}), 404
+
     data = request.json
     name = data.get("name")
     description = data.get("description")
     price = data.get("price")
+    stock = data.get("stock")
 
-    Stores.update(name=name, description=description, price=price)
+    producto.update(name=name, description=description, price=price, stock=stock)
 
-    return jsonify(render_store_detail(Stores))
+    return jsonify(render_producto_detail(producto))
 
-
-@store_bp.route("/products/<int:id>", methods=["DELETE"])
+@producto_bp.route("/products/<int:id>", methods=["DELETE"])
 @jwt_required
-@roles_required(roles=["admin"])
-def delete_Store(id):
-    Store = Store.get_by_id(id)
+@role_required(roles=["admin"])
+def delete_producto(id):
+    producto = Producto.get_by_id(id)
 
-    if not Store:
-        return jsonify({"error": "Store no encontrado"}), 404
-
-    Store.delete()
-
+    if not producto:
+        return jsonify({"error": "Producto no encontrado"}), 404
+    
+    producto.delete()
+    
     return "", 204

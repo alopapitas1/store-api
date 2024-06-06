@@ -7,7 +7,7 @@ def test_get_products(test_client, admin_auth_headers):
     # El usuario con el rol de "admin" debería poder obtener la lista de productos
     response = test_client.get("/api/products", headers=admin_auth_headers)
     assert response.status_code == 200
-    assert response.json == [] 
+    assert response.json == []
 
 
 def test_create_product(test_client, admin_auth_headers):
